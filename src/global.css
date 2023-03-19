@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind utilities;
+@tailwind components;
+
+.ToggleGroupItem[data-state='on'] {
+  @apply bg-purple-200 !important;
+}
