@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import ReactFlow, { addEdge, Background, Connection, ConnectionMode, Controls, MiniMap, useEdgesState, useNodesState } from 'reactflow';
+import ReactFlow, { addEdge, Background, Connection, ConnectionMode, Controls, MiniMap, Node, useEdgesState, useNodesState } from 'reactflow';
 import * as Toolbar from '@radix-ui/react-toolbar';
 import 'reactflow/dist/style.css';
 import { neutral } from 'tailwindcss/colors';
@@ -125,7 +125,12 @@ function App() {
       }
     }
     
-    setNodes(nodes => [...nodes, newNode]);
+    setNodes((nodes:any) => { // TODO any???
+      return [
+        ...nodes, 
+        newNode
+      ]
+    });
   }
 
   const changeListType = (type:string) => {
