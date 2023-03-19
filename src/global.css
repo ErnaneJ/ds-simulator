@@ -5,5 +5,25 @@
 @tailwind components;
 
 .ToggleGroupItem[data-state='on'] {
-  @apply bg-purple-200 !important;
+  @apply bg-purple-900 !important;
+  @apply text-white !important;
+}
+
+.SwitchThumb {
+  display: block;
+  width: 21px;
+  height: 21px;
+  background-color: white;
+  border-radius: 9999px;
+  box-shadow: 0 2px 2px var(--blackA7);
+  transition: transform 100ms;
+  transform: translateX(2px);
+  will-change: transform;
+}
+.SwitchThumb[data-state='checked'] {
+  transform: translateX(19px);
+}
+
+.SwitchRoot[data-state='checked'] {
+  @apply bg-purple-800 !important;
 }
