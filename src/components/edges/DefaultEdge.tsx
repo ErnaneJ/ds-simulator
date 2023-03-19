@@ -32,11 +32,6 @@ export default function DefaultEdge({
         d={edgePath}
         markerEnd={markerEnd}
       />
-      {/* <text>
-        <textPath href={`#${id}`} style={{ fontSize: 12 }} startOffset="50%" textAnchor="middle">
-          Ernane é extremamente lindo!
-        </textPath>
-      </text> */}
     </>
   );
 }
