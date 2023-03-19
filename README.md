@@ -37,12 +37,7 @@ Você também pode utilizar a seção de issues para reportar algum problema ou 
 
 ## ⚙️ Referência/Inspiração
 
+Desenvolvido durante o estudo das notas de aula apresentadas na disciplina de **Algoritmos e Estruturas de Dados I**, ofertada pelo Departamento de Engenharia de Computação e Automação da Universidade Federal do Rio Grande do Norte (_DCA/UFRN_).
+
 - [@ErnaneJ/ED-I](https://github.com/ErnaneJ/ED-I)
 - [@EduardoLFalcao/edi](https://github.com/eduardolfalcao/edi)
-
----
-
-<p align="center">
-  Desenvolvido com ♥ por  <a href="https://links.ernane.dev">Ernane Ferreira</a> 👋🏻
-
-</p>
