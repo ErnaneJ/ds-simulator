@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@radix-ui/react-popover": "^1.0.5",
+    "@radix-ui/react-switch": "^1.0.2",
     "@radix-ui/react-toggle-group": "^1.0.3",
     "@radix-ui/react-toolbar": "^1.0.3",
     "@reactflow/node-resizer": "^2.1.0",
