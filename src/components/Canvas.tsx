@@ -42,13 +42,15 @@ export default function Canvas() {
             "sourceHandle": "right",
             "target": target.id,
             "targetHandle": "left",
-            "markerEnd": { type: MarkerType.Arrow },
-            "markerStart": { type: MarkerType.Arrow }
+            "markerEnd": { type: MarkerType.ArrowClosed },
+            "markerStart": { type: MarkerType.ArrowClosed },
+            "animated": true,
           };
 
           if(objectType === 'arrayListElement'){
             delete connection["markerEnd"];
             delete connection["markerStart"];
+            delete connection["animated"];
           }else if(objectType === 'linkedListNode'){
             connection = { ...connection,  "targetHandle": "bottom" } 
           }else if(objectType === 'doubleLinkedListNode'){
@@ -58,8 +60,9 @@ export default function Canvas() {
               "sourceHandle": "left",
               "target": source.id,
               "targetHandle": "right",
-              "markerEnd": { type: MarkerType.Arrow },
-              "markerStart": { type: MarkerType.Arrow }
+              "markerEnd": { type: MarkerType.ArrowClosed },
+              "markerStart": { type: MarkerType.ArrowClosed },
+              "animated": true
             };
             setEdges(edges => addEdge(connection2, edges));
           }
