@@ -29,9 +29,22 @@ export default function Canvas() {
     setNodes((nds) => {
       setEdges([]);
       return nds.map((node, i) => {
-        if(objectType === 'arrayListElement') node.data = { ...node.data, index: i, last: nds.length === i+1 };
-        if(objectType === 'linkedListNode') node.data = { ...node.data, index: i, next: nds[i+1]?.data.label };
-        if(objectType === 'doubleLinkedListNode') node.data = { ...node.data, next: nds[i+1]?.data.label, prev: nds[i-1]?.data.label };
+        if(objectType === 'arrayListElement') node.data = { 
+          ...node.data, index: i, 
+          last: nds.length === i+1, 
+          label: `0x${i.toString(16).padStart(4,'0')}`
+        };
+
+        if(objectType === 'linkedListNode') node.data = {
+           ...node.data, index: i, 
+           next: nds[i+1]?.data.label 
+        };
+
+        if(objectType === 'doubleLinkedListNode') node.data = { 
+          ...node.data, 
+          next: nds[i+1]?.data.label, 
+          prev: nds[i-1]?.data.label 
+        };
 
         const source = node;
         const target = nds[i + 1];
@@ -99,7 +112,7 @@ export default function Canvas() {
 
     if(objectType === 'arrayListElement'){
       newNode.data = {
-        label: `0x${String(nodes.length).padStart(4,'0')}`,
+        label: `0x${nodes.length.toString(16).padStart(4,'0')}`,
         value: Math.floor(Math.random() * 100),
         index: nodes.length,
         last: true
@@ -109,12 +122,12 @@ export default function Canvas() {
         index: nodes.length,
         next: null,
         value: Math.floor(Math.random() * 100),
-        label: `0x${String(Math.floor(Math.random() * 9999)).padStart(4,'0')}`
+        label: `0x${Math.floor(Math.random() * 9999).toString(16).padStart(4,'0')}`
       }
     }else if(objectType === 'doubleLinkedListNode'){
       newNode.data = {
         value: Math.floor(Math.random() * 100),
-        label: `0x${String(Math.floor(Math.random() * 9999)).padStart(4,'0')}`,
+        label: `0x${Math.floor(Math.random() * 9999).toString(16).padStart(4,'0')}`,
         index: nodes.length,
         next: null,
         prev: refNode?.data.label
