@@ -20,7 +20,7 @@ export function TollbarListType({ objectType, changeListType }:TollbarListTypePr
         aria-label="Array List"
       >
         <i className="fa-solid fa-layer-group"></i>
-        Array List
+        Array List &#123;5&#125;
         { objectType === "arrayListElement" && <i className="fa-regular fa-circle-check"></i> }
       </ToggleGroup.Item>
       <ToggleGroup.Item 

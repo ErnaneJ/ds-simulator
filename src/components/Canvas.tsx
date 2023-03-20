@@ -5,29 +5,33 @@ import { MarkerType } from 'reactflow';
 import { ToolbarFooter } from './ToolbarFooter';
 import { TollbarListType } from './TollbarListType';
 import { SwitchAutoLayout } from './SwitchAutoLayout';
-import { NODE_TYPES, EDGE_TYPES, SIZES_NODES } from '../lib/constraints';
+import { NODE_TYPES, EDGE_TYPES, SIZES_NODES, DEFAULT_NODES } from '../lib/constraints';
 
-import 'reactflow/dist/style.css';
+import * as Add from '../lib/Add';
+import * as Remove from '../lib/Remove';
+
 import ReactFlow, { 
   addEdge, Background, Connection, ConnectionMode, Controls, 
   Node, useEdgesState, useNodesState 
 } from 'reactflow';
 
+import 'reactflow/dist/style.css';
+
 export default function Canvas() {
   const [objectType, setObjectType] = useState('arrayListElement');
   const [indexToChange, setIndexToChange] = useState(-1);
-  const [autoLayoutToggle, setAutoLayoutToggle] = useState(false);
+  const [autoLayoutToggle, setAutoLayoutToggle] = useState(true);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState((DEFAULT_NODES as any)[objectType]() as Node[]);
 
   const onConnect = useCallback((connection: Connection) => {
     return setEdges(edges => addEdge(connection, edges));
   }, []);
 
   useEffect(() => {
+    setEdges([]);
     setNodes((nds) => {
-      setEdges([]);
       return nds.map((node, i) => {
         if(objectType === 'arrayListElement') node.data = { 
           ...node.data, index: i, 
@@ -49,7 +53,7 @@ export default function Canvas() {
         const source = node;
         const target = nds[i + 1];
         if(source && target){
-          let connection:any = {
+          let defaultConnection:any = {
             "type": "default",
             "source": source.id,
             "sourceHandle": "right",
@@ -61,13 +65,13 @@ export default function Canvas() {
           };
 
           if(objectType === 'arrayListElement'){
-            delete connection["markerEnd"];
-            delete connection["markerStart"];
-            delete connection["animated"];
+            delete defaultConnection["markerEnd"];
+            delete defaultConnection["markerStart"];
+            delete defaultConnection["animated"];
           }else if(objectType === 'linkedListNode'){
-            connection = { ...connection,  "targetHandle": "bottom" } 
+            defaultConnection = { ...defaultConnection,  "targetHandle": "bottom" } 
           }else if(objectType === 'doubleLinkedListNode'){
-            const connection2 = { 
+            const inverseConnection = {
               "type": "default", 
               "source": target.id,
               "sourceHandle": "left",
@@ -77,23 +81,15 @@ export default function Canvas() {
               "markerStart": { type: MarkerType.ArrowClosed },
               "animated": true
             };
-            setEdges(edges => addEdge(connection2, edges));
+            setEdges(edges => addEdge(inverseConnection, edges));
           }
           
-          setEdges(edges => addEdge(connection, edges));
+          setEdges(edges => addEdge(defaultConnection, edges));
         }
     
         return node;
       })
     });
-
-    setEdges((eds) => eds.map((edge, i) => {
-        edge['markerEnd'] = { type: MarkerType.Arrow };
-        edge['markerStart'] = { type: MarkerType.Arrow };
-
-        return edge;
-      })
-    );
   }, [nodes, edges]);
 
   function addNode(){
@@ -101,51 +97,24 @@ export default function Canvas() {
     if(indexToChange < -1 || indexToChange >= nodes.length) return alert("Index inválido!");
 
     if(!indexToChange) setIndexToChange(-1);
-    const refNode = indexToChange != -1 ? nodes[indexToChange] : nodes[nodes.length - 1];
-    const yPos = (refNode?.position.y || 200) + (nodes.length % 2 == 0 ? -1 : 1) * (SIZES_NODES as any)[objectType].height;
-    const newNode = {
-      id: crypto.randomUUID(),
-      type: objectType, 
-      position: {x: (refNode?.position.x || 100) + (SIZES_NODES as any)[objectType].width, y: yPos},
-      data: { },
-    }
 
-    if(objectType === 'arrayListElement'){
-      newNode.data = {
-        label: `0x${nodes.length.toString(16).padStart(4,'0')}`,
-        value: Math.floor(Math.random() * 100),
-        index: nodes.length,
-        last: true
-      }
-    }else if(objectType === 'linkedListNode'){
-      newNode.data = {
-        index: nodes.length,
-        next: null,
-        value: Math.floor(Math.random() * 100),
-        label: `0x${Math.floor(Math.random() * 9999).toString(16).padStart(4,'0')}`
-      }
-    }else if(objectType === 'doubleLinkedListNode'){
-      newNode.data = {
-        value: Math.floor(Math.random() * 100),
-        label: `0x${Math.floor(Math.random() * 9999).toString(16).padStart(4,'0')}`,
-        index: nodes.length,
-        next: null,
-        prev: refNode?.data.label
-      }
-    }
+    const refNode = indexToChange != -1 ? nodes[indexToChange] : nodes[nodes.length - 1];
+    const sizesNode = (SIZES_NODES as any)[objectType];
+    const yPos = (refNode?.position.y || 200) + (nodes.length % 2 == 0 ? -1 : 1) * sizesNode.height;
+
+    if(objectType === 'arrayListElement') Add.FromArrayList({
+      refNode, yPos, nodes,
+      indexToChange, sizesNode, setNodes
+    });
     
-    setNodes((nodes:Node[]) => { // TODO any???
-      if(indexToChange === 0){
-        return [ 
-          newNode, 
-          ...nodes
-        ];
-      }else if(indexToChange && indexToChange < nodes.length && indexToChange > 0) return [ 
-        ...nodes.slice(0, indexToChange), 
-        newNode, 
-        ...nodes.slice(indexToChange) 
-      ];
-      return [ ...nodes,  newNode ];
+    if(objectType === 'linkedListNode') Add.FromLinkedList({
+      refNode, yPos, nodes,
+      indexToChange, sizesNode, setNodes
+    });
+
+    if(objectType === 'doubleLinkedListNode') Add.FromDoubleLinkedList({
+      refNode, yPos, nodes,
+      indexToChange, sizesNode, setNodes
     });
 
     autoLayout();
@@ -153,11 +122,19 @@ export default function Canvas() {
 
   function removeNode(){
     if(indexToChange < -1 || indexToChange >= nodes.length){
-      alert("Index inválido!")
+      return alert("Index inválido!")
     }
-    const copyNodes = [...nodes];
-    copyNodes.splice(indexToChange, 1);
-    setNodes(copyNodes);
+
+    const sizesNode = (SIZES_NODES as any)[objectType];
+    const paramsToRemove = {
+      nodes, indexToChange, setNodes, sizesNode
+    }
+
+    if(objectType === 'arrayListElement') Remove.FromArrayList(paramsToRemove);
+    if(objectType === 'linkedListNode') Remove.FromLinkedList(paramsToRemove);
+    if(objectType === 'doubleLinkedListNode') Remove.FromDoubleLinkedList(paramsToRemove);
+
+    autoLayout();
   }
   
   function autoLayout(){
@@ -176,7 +153,7 @@ export default function Canvas() {
 
   const changeListType = (type:string) => {
     setObjectType(type);
-    setNodes([]);
+    setNodes((DEFAULT_NODES as any)[type]() as Node[]);
     setEdges([]);
     setIndexToChange(-1);
   }

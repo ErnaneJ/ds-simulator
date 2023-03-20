@@ -10,7 +10,7 @@ export function ArrayListElement({ selected, data }: NodeProps) {
           {data.index}
         </span>
         <span className="text-white font-bold text-2xl">
-          {data.value}
+          {data.value ? data.value : <span className="text-white/50"> null </span>}
         </span>
         <span className="text-white/80 font-bold text-sm absolute bottom-1 left-3">
           {data.label}

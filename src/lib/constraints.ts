@@ -24,3 +24,16 @@ export const SIZES_NODES:IsizeNodes = {
   linkedListNode: { width: 250, height: 110 },
   doubleLinkedListNode: { width: 310, height: 120 },
 }
+
+export const DEFAULT_NODES = {
+  arrayListElement: () => {
+    return Array(5).fill(0).map((el, i) => { return {
+      id: crypto.randomUUID(),
+      type: 'arrayListElement', 
+      position: {x: i*150 + 50, y: 150 + 50 * (i % 2 === 0 ? -1 : 1)},
+      data: { },
+    }});
+  },
+  linkedListNode: () => [],
+  doubleLinkedListNode: () => []
+}
