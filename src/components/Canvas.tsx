@@ -46,12 +46,11 @@ export default function Canvas() {
             "markerStart": { type: MarkerType.Arrow }
           };
 
-          if(objectType === 'arrayListelement'){
+          if(objectType === 'arrayListElement'){
             delete connection["markerEnd"];
             delete connection["markerStart"];
           }else if(objectType === 'linkedListNode'){
-            connection = { ...connection,  "targetHandle": "bottom" }
-            
+            connection = { ...connection,  "targetHandle": "bottom" } 
           }else if(objectType === 'doubleLinkedListNode'){
             const connection2 = { 
               "type": "default", 
