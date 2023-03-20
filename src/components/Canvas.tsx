@@ -5,10 +5,11 @@ import { MarkerType } from 'reactflow';
 import { ToolbarFooter } from './ToolbarFooter';
 import { TollbarListType } from './TollbarListType';
 import { SwitchAutoLayout } from './SwitchAutoLayout';
-import { NODE_TYPES, EDGE_TYPES, SIZES_NODES, DEFAULT_NODES } from '../lib/constraints';
+import { NODE_TYPES, EDGE_TYPES, SIZES_NODES, loadDefaltNode } from '../lib/constraints';
 
 import * as Add from '../lib/Add';
 import * as Remove from '../lib/Remove';
+import * as Errors from '../lib/Errors';
 
 import ReactFlow, { 
   addEdge, Background, Connection, ConnectionMode, Controls, 
@@ -16,6 +17,7 @@ import ReactFlow, {
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
+import {ToastNotification} from './ToastNotification';
 
 export default function Canvas() {
   const [objectType, setObjectType] = useState('arrayListElement');
@@ -23,7 +25,11 @@ export default function Canvas() {
   const [autoLayoutToggle, setAutoLayoutToggle] = useState(true);
 
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [nodes, setNodes, onNodesChange] = useNodesState((DEFAULT_NODES as any)[objectType]() as Node[]);
+  const [nodes, setNodes, onNodesChange] = useNodesState(loadDefaltNode(objectType));
+
+  const [toastOpen, setToastOpen] = useState(false);
+  const [titleToast, setTitleToast] = useState('');
+  const [descriptionToast, setDescriptionToast] = useState('');
 
   const onConnect = useCallback((connection: Connection) => {
     return setEdges(edges => addEdge(connection, edges));
@@ -93,8 +99,20 @@ export default function Canvas() {
   }, [nodes, edges]);
 
   function addNode(){
-    if(!objectType) return alert("Tipo de lista inválido!");
-    if(indexToChange < -1 || indexToChange >= nodes.length) return alert("Index inválido!");
+    if(Errors.objectType({
+      objectType,
+      setToastOpen,
+      setTitleToast,
+      setDescriptionToast
+    })) return;
+
+    if(Errors.invalidIndex({
+      indexToChange,
+      nodesLength: nodes.length,
+      setToastOpen,
+      setTitleToast,
+      setDescriptionToast
+    })) return;
 
     if(!indexToChange) setIndexToChange(-1);
 
@@ -121,9 +139,20 @@ export default function Canvas() {
   }
 
   function removeNode(){
-    if(indexToChange < -1 || indexToChange >= nodes.length){
-      return alert("Index inválido!")
-    }
+    if(Errors.objectType({
+      objectType,
+      setToastOpen,
+      setTitleToast,
+      setDescriptionToast
+    })) return;
+
+    if(Errors.invalidIndex({
+      indexToChange,
+      nodesLength: nodes.length,
+      setToastOpen,
+      setTitleToast,
+      setDescriptionToast
+    })) return;
 
     const sizesNode = (SIZES_NODES as any)[objectType];
     const paramsToRemove = {
@@ -153,7 +182,7 @@ export default function Canvas() {
 
   const changeListType = (type:string) => {
     setObjectType(type);
-    setNodes((DEFAULT_NODES as any)[type]() as Node[]);
+    setNodes(loadDefaltNode(type));
     setEdges([]);
     setIndexToChange(-1);
   }
@@ -177,7 +206,6 @@ export default function Canvas() {
         <Controls style={{backgroundColor: neutral[50]}}/>
       </ReactFlow>
 
-      
       <SwitchAutoLayout 
         autoLayoutToggle={autoLayoutToggle}
         setAutoLayoutToggle={setAutoLayoutToggle}
@@ -193,6 +221,13 @@ export default function Canvas() {
         removeNode={removeNode} 
         indexToChange={indexToChange} 
         setIndexToChange={setIndexToChange} 
+      />
+
+      <ToastNotification 
+        open={toastOpen}
+        setOpen={setToastOpen}
+        title={titleToast}
+        description={descriptionToast}
       />
     </div>
   );

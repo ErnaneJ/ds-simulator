@@ -25,15 +25,21 @@ export const SIZES_NODES:IsizeNodes = {
   doubleLinkedListNode: { width: 310, height: 120 },
 }
 
-export const DEFAULT_NODES = {
-  arrayListElement: () => {
-    return Array(5).fill(0).map((el, i) => { return {
-      id: crypto.randomUUID(),
-      type: 'arrayListElement', 
-      position: {x: i*150 + 50, y: 150 + 50 * (i % 2 === 0 ? -1 : 1)},
-      data: { },
-    }});
-  },
-  linkedListNode: () => [],
-  doubleLinkedListNode: () => []
+export const loadDefaltNode = (type:string) => {
+  const opts = {
+    arrayListElement: () => {
+      return Array(5).fill(0).map((el, i) => { return {
+        id: crypto.randomUUID(),
+        type: 'arrayListElement', 
+        position: {x: i*150 + 50, y: 150 + 50 * (i % 2 === 0 ? -1 : 1)},
+        data: { },
+      }});
+    },
+    linkedListNode: () => [],
+    doubleLinkedListNode: () => []
+  }
+  const opt = (opts as any)[type];
+
+  if(opt) return opt();
+  return [];
 }
