@@ -141,7 +141,7 @@ export default function Canvas() {
 
   function removeNode(index?: number) {
     const indexToRemove = typeof index === 'number' ? index : indexToChange;
-    
+
     if (Errors.objectType({
       objectType,
       setToastOpen,
@@ -169,7 +169,7 @@ export default function Canvas() {
     autoLayout();
   }
 
-  async function handleNodeClick(event: React.MouseEvent, node: Node) {
+  function handleNodeClick(event: React.MouseEvent, node: Node) {
     switch (event.detail) {
       case 1: {
         break;
