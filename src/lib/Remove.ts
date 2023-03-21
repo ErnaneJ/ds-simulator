@@ -1,6 +1,6 @@
 interface RemoveFromArrayListParams {
   nodes : any,
-  indexToChange : number,
+  indexToRemove : number,
   setNodes : any,
   sizesNode : any,
 }
@@ -9,18 +9,18 @@ interface RemoveFromLinkedListParams extends RemoveFromArrayListParams {}
 interface RemoveFromDoubleLinkedListParams extends RemoveFromArrayListParams {}
 
 export function FromArrayList({
-  nodes, indexToChange, setNodes, sizesNode
+  nodes, indexToRemove, setNodes, sizesNode
 }:RemoveFromArrayListParams):void{
   const copyNodes = [...nodes];
   
-  if(indexToChange === -1){
+  if(indexToRemove === -1){
     const elementsCount = nodes.filter((node:any) => node.data.value).length;
     copyNodes.splice(elementsCount - 1, 1);
   }else{
-    copyNodes.splice(indexToChange, 1);
+    copyNodes.splice(indexToRemove, 1);
   }
 
-  const refNode = copyNodes[indexToChange - 1];
+  const refNode = copyNodes[indexToRemove - 1];
   const yPos = (refNode?.position.y || 200) + (nodes.length % 2 == 0 ? -1 : 1) * sizesNode.height;
 
   setNodes([...copyNodes, {
@@ -32,17 +32,17 @@ export function FromArrayList({
 };
 
 export function FromLinkedList({
-  nodes, indexToChange, setNodes, sizesNode
+  nodes, indexToRemove, setNodes, sizesNode
 }:RemoveFromLinkedListParams):void{
   const copyNodes = [...nodes];
-  copyNodes.splice(indexToChange, 1);
+  copyNodes.splice(indexToRemove, 1);
   setNodes(copyNodes);
 };
 
 export function FromDoubleLinkedList({
-  nodes, indexToChange, setNodes, sizesNode
+  nodes, indexToRemove, setNodes, sizesNode
 }:RemoveFromDoubleLinkedListParams):void{
   const copyNodes = [...nodes];
-  copyNodes.splice(indexToChange, 1);
+  copyNodes.splice(indexToRemove, 1);
   setNodes(copyNodes);
 };

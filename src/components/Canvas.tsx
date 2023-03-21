@@ -139,8 +139,9 @@ export default function Canvas() {
   }
 
 
-  function removeNode() {
-
+  function removeNode(index?: number) {
+    const indexToRemove = typeof index === 'number' ? index : indexToChange;
+    
     if (Errors.objectType({
       objectType,
       setToastOpen,
@@ -149,7 +150,7 @@ export default function Canvas() {
     })) return;
 
     if (Errors.invalidIndex({
-      indexToChange,
+      indexToChange: indexToRemove,
       nodesLength: nodes.length,
       setToastOpen,
       setTitleToast,
@@ -158,7 +159,7 @@ export default function Canvas() {
 
     const sizesNode = (SIZES_NODES as any)[objectType];
     const paramsToRemove = {
-      nodes, indexToChange, setNodes, sizesNode
+      nodes, indexToRemove, setNodes, sizesNode
     }
 
     if (objectType === 'arrayListElement') Remove.FromArrayList(paramsToRemove);
@@ -168,14 +169,13 @@ export default function Canvas() {
     autoLayout();
   }
 
-  function handleNodeClick(event: React.MouseEvent, node: Node) {
+  async function handleNodeClick(event: React.MouseEvent, node: Node) {
     switch (event.detail) {
       case 1: {
         break;
       }
       case 2: {
-        setIndexToChange(parseInt(node.data.index));
-        removeNode();
+        removeNode(parseInt(node.data.index));
         break;
       }
       default: {
