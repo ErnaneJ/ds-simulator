@@ -1,3 +1,5 @@
+import * as Errors from './Errors';
+
 interface AddFromLinkedListParams {
   refNode : Node | null | any,
   yPos : number,
@@ -5,6 +7,9 @@ interface AddFromLinkedListParams {
   indexToChange : number,
   sizesNode : any,
   setNodes : any
+  setToastOpen : (status:boolean) => void,
+  setTitleToast : (title:string) => void,
+  setDescriptionToast : (description:string) => void
 }
 
 interface AddFromDoubleLinkedListParams extends AddFromLinkedListParams {}
@@ -69,12 +74,20 @@ export function FromDoubleLinkedList({
 
 export function FromArrayList({
   refNode, yPos, nodes,
-  indexToChange, sizesNode, setNodes
+  indexToChange, sizesNode, setNodes,
+  setToastOpen, setTitleToast, setDescriptionToast
 }:AddFromArrayListParams):void{
   const elementsCount = nodes.filter((node:any) => node.data.value).length;
   const capacity = nodes.length;
 
-  if(indexToChange >= elementsCount) return alert('index invalido!')
+  if(indexToChange >= elementsCount) {
+    Errors.invalidIndex({
+      indexToChange,
+      nodesLength: nodes.length,
+      setToastOpen, setTitleToast, setDescriptionToast
+    });
+    return;
+  };
   
   const newNode = {
     id: crypto.randomUUID(),
@@ -91,10 +104,10 @@ export function FromArrayList({
   let updatedNodes = [...nodes];
   if(elementsCount === capacity){
     updatedNodes = ([...updatedNodes, ...updatedNodes.map((nd:any, i:number) => {
-      const lastNode = updatedNodes[updatedNodes.length - 1];
+      const firstNode = updatedNodes[0];
       nd = {
         id: crypto.randomUUID(), type: 'arrayListElement',
-        position: {x: lastNode.position.x + nd.position.x + 100, y: nd.position.y * -1},
+        position: {x: firstNode.position.x + 100*i, y: firstNode.position.y},
         data: {}
       }
       

@@ -6,6 +6,12 @@ interface TollbarListTypeProps {
 }
 
 export function TollbarListType({ objectType, changeListType }:TollbarListTypeProps) {
+
+  const clearNodes = () => {
+    changeListType('');
+    changeListType(objectType);
+  }
+
   return (
     <ToggleGroup.Root
       className="fixed top-2 left-2 gap-1 flex dounded-md shadow"
@@ -41,6 +47,13 @@ export function TollbarListType({ objectType, changeListType }:TollbarListTypePr
         Double Linked List
         { objectType === "doubleLinkedListNode" && <i className="fa-regular fa-circle-check"></i> }
       </ToggleGroup.Item>
+
+      <button
+        onClick={clearNodes}
+        className="bg-purple-800 border-[2px] gap-1 border-transparent cursor-pointer text-white font-semibold flex font-md items-center justify-center px-4 py-1 ml-3 rounded transition" 
+      >
+        <i className="fa-solid fa-arrows-rotate"></i>
+      </button>
     </ToggleGroup.Root>
   );
 }

@@ -15,18 +15,6 @@ export function ArrayListElement({ selected, data }: NodeProps) {
         <span className="text-white/80 font-bold text-sm absolute bottom-1 left-3">
           {data.label}
         </span>
-
-        <Handle 
-          className="-right-5 w-3 h-3 bg-purple-900/80"
-          id="right" position={Position.Right} type="source" 
-          style={{opacity: data.last ? 0 : 1}}
-        />
-
-        <Handle 
-          className="-left-5 w-3 h-3 bg-purple-900/80"
-          id="left" position={Position.Left} type="source" 
-          style={{opacity: data.index === 0 ? 0 : 1}}
-        />
       </div>
     </div>
   )
