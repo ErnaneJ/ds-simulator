@@ -39,11 +39,20 @@ export default function Canvas() {
     setEdges([]);
     setNodes((nds) => {
       return nds.map((node, i) => {
-        if (objectType === 'arrayListElement') node.data = {
-          ...node.data, index: i,
-          last: nds.length === i + 1,
-          label: `0x${i.toString(16).padStart(4, '0')}`
-        };
+        if (objectType === 'arrayListElement') {
+          const firstElementPosition = nds[0].position;
+          node.data = {
+            ...node.data, 
+            index: i,
+            last: nds.length === i + 1,
+            label: `0x${i.toString(16).padStart(4, '0')}`,
+          };
+          node.draggable = false,
+          node.position = {
+            x: firstElementPosition.x + (i * SIZES_NODES.arrayListElement.width),
+            y: firstElementPosition.y
+          }
+        }
 
         if (objectType === 'linkedListNode') node.data = {
           ...node.data, index: i,
@@ -60,32 +69,30 @@ export default function Canvas() {
         const target = nds[i + 1];
         if (source && target) {
           let defaultConnection: any = {
-            "type": "default",
-            "source": source.id,
-            "sourceHandle": "right",
-            "target": target.id,
-            "targetHandle": "left",
-            "markerEnd": { type: MarkerType.ArrowClosed },
-            "markerStart": { type: MarkerType.ArrowClosed },
-            "animated": true,
+            type: "default",
+            source: source.id,
+            sourceHandle: "right",
+            target: target.id,
+            targetHandle: "left",
+            markerEnd: { type: MarkerType.ArrowClosed },
+            markerStart: { type: MarkerType.ArrowClosed },
+            animated: true,
           };
 
           if (objectType === 'arrayListElement') {
-            delete defaultConnection["markerEnd"];
-            delete defaultConnection["markerStart"];
-            delete defaultConnection["animated"];
+            return node;
           } else if (objectType === 'linkedListNode') {
             defaultConnection = { ...defaultConnection, "targetHandle": "bottom" }
           } else if (objectType === 'doubleLinkedListNode') {
             const inverseConnection = {
-              "type": "default",
-              "source": target.id,
-              "sourceHandle": "left",
-              "target": source.id,
-              "targetHandle": "right",
-              "markerEnd": { type: MarkerType.ArrowClosed },
-              "markerStart": { type: MarkerType.ArrowClosed },
-              "animated": true
+              type: "default",
+              source: target.id,
+              sourceHandle: "left",
+              target: source.id,
+              targetHandle: "right",
+              markerEnd: { type: MarkerType.ArrowClosed },
+              markerStart: { type: MarkerType.ArrowClosed },
+              animated: true
             };
             setEdges(edges => addEdge(inverseConnection, edges));
           }
@@ -122,22 +129,24 @@ export default function Canvas() {
 
     if (objectType === 'arrayListElement') Add.FromArrayList({
       refNode, yPos, nodes,
-      indexToChange, sizesNode, setNodes
+      indexToChange, sizesNode, setNodes,
+      setToastOpen, setTitleToast, setDescriptionToast
     });
 
     if (objectType === 'linkedListNode') Add.FromLinkedList({
       refNode, yPos, nodes,
-      indexToChange, sizesNode, setNodes
+      indexToChange, sizesNode, setNodes,
+      setToastOpen, setTitleToast, setDescriptionToast
     });
 
     if (objectType === 'doubleLinkedListNode') Add.FromDoubleLinkedList({
       refNode, yPos, nodes,
-      indexToChange, sizesNode, setNodes
+      indexToChange, sizesNode, setNodes,
+      setToastOpen, setTitleToast, setDescriptionToast
     });
 
     autoLayout();
   }
-
 
   function removeNode(index?: number) {
     const indexToRemove = typeof index === 'number' ? index : indexToChange;
@@ -157,9 +166,8 @@ export default function Canvas() {
       setDescriptionToast
     })) return;
 
-    const sizesNode = (SIZES_NODES as any)[objectType];
     const paramsToRemove = {
-      nodes, indexToRemove, setNodes, sizesNode
+      nodes, indexToRemove, setNodes
     }
 
     if (objectType === 'arrayListElement') Remove.FromArrayList(paramsToRemove);
@@ -172,6 +180,7 @@ export default function Canvas() {
   function handleNodeClick(event: React.MouseEvent, node: Node) {
     switch (event.detail) {
       case 1: {
+        // setIndexToChange(parseInt(node.data.index));
         break;
       }
       case 2: {
@@ -186,6 +195,7 @@ export default function Canvas() {
 
   function autoLayout() {
     if (!autoLayoutToggle) return;
+    if(objectType ==='arrayListElement') return;
     setNodes((nds: Node[]) => {
       return nds.map((node, i) => {
         const lastNode = nds[i - 1];
