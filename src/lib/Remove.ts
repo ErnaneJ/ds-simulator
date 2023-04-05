@@ -18,6 +18,11 @@ export function FromArrayList({
     if(refNode) refNode.data.value = null;
   }else{
     copyNodes[indexToRemove].data.value = null;
+    copyNodes.forEach((node, index) => {
+      if(index > indexToRemove && index > 0){
+        copyNodes[index - 1].data.value = node.data.value;
+      }
+    });
   }
 
   setNodes(copyNodes);

@@ -1,13 +1,28 @@
 import * as Toolbar from "@radix-ui/react-toolbar";
+import { useEffect } from "react";
 
 interface ToolbarFooterProps {
   addNode: () => void;
   removeNode: () => void;
   indexToChange: number;
+  maxIndex: number;
   setIndexToChange: (index: number) => void;
 }
 
-export function ToolbarFooter({ addNode, removeNode, indexToChange, setIndexToChange }:ToolbarFooterProps){
+export function ToolbarFooter({ addNode, removeNode, indexToChange, setIndexToChange, maxIndex }:ToolbarFooterProps){
+  
+  const handleChangeInput = (e:React.ChangeEvent<HTMLInputElement>) => {
+    let value = parseInt(e.target.value)
+    
+    if(isNaN(value)) value = -1;
+
+    setIndexToChange(parseInt(e.target.value))
+  }
+
+  useEffect(() => {
+    if(isNaN(indexToChange)) setIndexToChange(-1)
+  }, [indexToChange]);
+  
   return (
     <>
     
@@ -31,8 +46,10 @@ export function ToolbarFooter({ addNode, removeNode, indexToChange, setIndexToCh
           <input 
             type="number"
             value={indexToChange} 
+            min={-1}
+            max={maxIndex}
             className="border border-gray-300 rounded-md w-24 h-10 pl-4 pr-2 outline-2 outline-purple-800 text-purple-800 font-semibold"
-            onChange={e => setIndexToChange(parseInt(e.target.value))}
+            onChange={handleChangeInput}
           />
         </div>
       </Toolbar.Root>

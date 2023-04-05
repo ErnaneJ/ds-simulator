@@ -12,6 +12,27 @@ interface invalidIndexErrorParams extends ErrorBaseParams{
   indexToChange : number,
   nodesLength : number
 }
+
+interface listIsEmptyErrorParams extends ErrorBaseParams{
+  realSize : number
+}
+export function listIsEmpty({
+  realSize,
+  setToastOpen,
+  setTitleToast,
+  setDescriptionToast
+}:listIsEmptyErrorParams){
+  if(realSize === 0){
+    setToastOpen(true);
+    setTitleToast('Opss..! Lista vazia.');
+    setDescriptionToast('Não existem itens na lista para serem removidos.');
+
+    return true;
+  }
+
+  return false;
+}
+
 export function objectType({
   objectType, 
   setToastOpen,
@@ -38,7 +59,7 @@ export function invalidIndex({
   if(indexToChange < -1 || indexToChange >= nodesLength) {
     setToastOpen(true);
     setTitleToast('Opss..! Indice inválido.');
-    setDescriptionToast('O indice deve ser um número inteiro entre -1 e o tamanho da lista.');
+    setDescriptionToast('O indice deve ser um número inteiro entre -1 e a quantidade de elementos presentes na lista.');
 
     return true;
   }

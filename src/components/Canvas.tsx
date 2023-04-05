@@ -103,9 +103,20 @@ export default function Canvas() {
         return node;
       })
     });
+
+    const realSize = nodes.filter(e => e.data.value).length;
+    if (indexToChange >= realSize - 1) setIndexToChange(realSize - 1);   
   }, [nodes, edges, indexToChange]);
 
+  useEffect(() => {
+    if(toastOpen) setTimeout(() => {
+      setToastOpen(false);
+    }, 5000);
+  }, [toastOpen]);
+
   function addNode() {
+    const realSize = nodes.filter(e => e.data.value).length;
+   
     if (Errors.objectType({
       objectType,
       setToastOpen,
@@ -115,13 +126,11 @@ export default function Canvas() {
 
     if (Errors.invalidIndex({
       indexToChange,
-      nodesLength: nodes.length,
+      nodesLength: realSize,
       setToastOpen,
       setTitleToast,
       setDescriptionToast
     })) return;
-
-    if (!indexToChange) setIndexToChange(-1);
 
     const refNode = indexToChange != -1 ? nodes[indexToChange] : nodes[nodes.length - 1];
     const sizesNode = (SIZES_NODES as any)[objectType];
@@ -150,6 +159,14 @@ export default function Canvas() {
 
   function removeNode(index?: number) {
     const indexToRemove = typeof index === 'number' ? index : indexToChange;
+    const realSize = nodes.filter(n => n.data.value).length;
+
+    if (Errors.listIsEmpty({
+      setToastOpen,
+      setTitleToast,
+      setDescriptionToast,
+      realSize
+    })) return;
 
     if (Errors.objectType({
       objectType,
@@ -160,7 +177,7 @@ export default function Canvas() {
 
     if (Errors.invalidIndex({
       indexToChange: indexToRemove,
-      nodesLength: nodes.length,
+      nodesLength: realSize,
       setToastOpen,
       setTitleToast,
       setDescriptionToast
@@ -250,6 +267,7 @@ export default function Canvas() {
         removeNode={removeNode}
         indexToChange={indexToChange}
         setIndexToChange={setIndexToChange}
+        maxIndex={nodes.filter(n => n.data.value).length - 1}
       />
 
       <ToastNotification
